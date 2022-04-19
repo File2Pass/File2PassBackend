@@ -27,8 +27,8 @@ CREATE TABLE `uint` (
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = UTF8MB4;
 CREATE TABLE `expected_performance` (
-  `id` INT AUTO_INCREMENT COMMENT "依托单位id",
-  `name` VARCHAR(10) NOT NULL COMMENT "依托单位名称",
+  `id` INT AUTO_INCREMENT COMMENT "项目预期成果id",
+  `content` TEXT NOT NULL COMMENT "项目预期成果",
   `expenses` DOUBLE NOT NULL COMMENT "项目经费",
   `deadline` DATETIME NOT NULL COMMENT "项目预期的完成时间",
   PRIMARY KEY(`id`)

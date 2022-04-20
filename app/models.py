@@ -11,7 +11,7 @@ class Project(db.Model):
     summary = db.Column(db.Text)
     name = db.Column(db.String(25))
     manager_id = db.Column(db.BigInteger)
-    uint_id = db.Column(db.BigInteger)
+    unit_id = db.Column(db.BigInteger)
     expected_performance_id = db.Column(db.BigInteger)
     content = db.Column(db.Text)
 
@@ -32,7 +32,7 @@ class Unit(db.Model):
     """
     依托单位
     """
-    __tablename__ = 'uint'
+    __tablename__ = 'unit'
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(25))
     location = db.Column(db.String(30))

@@ -7,7 +7,7 @@ CREATE TABLE `project` (
   `summary` TEXT NOT NULL COMMENT "项目摘要",
   `name` VARCHAR(25) NOT NULL COMMENT "项目名称",
   `manager_id` INT NOT NULL COMMENT "项目负责人id",
-  `uint_id` INT NOT NULL COMMENT "依托单位id",
+  `unit_id` INT NOT NULL COMMENT "依托单位id",
   `expected_performance_id` INT NOT NULL COMMENT "项目的预期信息id",
   `content` TEXT NOT NULL COMMENT "项目正文",
   PRIMARY KEY(`id`)
@@ -20,7 +20,7 @@ CREATE TABLE `manager` (
   `sex` TINYINT(1) NOT NULL COMMENT "性别 0-男性 1-女性",
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = UTF8MB4;
-CREATE TABLE `uint` (
+CREATE TABLE `unit` (
   `id` INT AUTO_INCREMENT COMMENT "依托单位id",
   `name` VARCHAR(10) NOT NULL COMMENT "依托单位名称",
   `location` VARCHAR(30) NOT NULL COMMENT "依托单位所属地",

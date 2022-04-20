@@ -1,7 +1,8 @@
 # 这个文件主要完成的是对数据库中存储的申报书的内容进行提取
 from . import api
 from .. import db
-from ..models import Project, Manager
+from ..models import Project, Manager, Unit, Expected_Performance
+from flask import jsonify
 
 
 # 这个主要是通过通过前端发送过来的申报书id对数据库内的信息进行展示
@@ -10,21 +11,105 @@ def show_allProject():
     # print(1)
     # sql = 'select id, name from project'
     pro = Project.query.all()
-    return str(pro[0].id)
+    if pro is None:
+        return jsonify({
+            "msg": "加载失败"
+        }), 400
+    res = {
+        "list": [{
+            "id": i.id,
+            "type": i.type,
+            "summary": i.summary,
+            "name": i.name
+        }for i in pro]
+    }
+    return jsonify(res), 200
 
 
 # 这个主要是对项目基本信息进行呈现
 @api.route("/file/review/<int:id>/project")
 def show_project(id):
     res = Project.query.filter(Project.id == id)
-    return str(res[0].id)
+    if res is None:
+        return jsonify({
+            "msg": "查询基本信息失败"
+        }), 400
+    result = {
+        "list": [{
+            "id": i.id,
+            "type": i.type,
+            "summary": i.summary,
+            "name": i.name
+        } for i in res]
+    }
+    return jsonify(result), 200
 
 
 # 这个主要是对项目基本信息中的申报人信息进行呈现
 @api.route("/file/review/<int:id>/manager")
 def show_manager(id):
-    res = Project.query.filter(Project.id == id)
-    uid = res[0].manager_id
+    re = Project.query.filter(Project.id == id)
+    uid = re[0].manager_id
     print("id:", uid)
     manage_res = Manager.query.filter(Manager.id == int(uid)).first()
-    return str(manage_res.name)
+    if manage_res is None:
+        return jsonify({
+            "msg": "获取失败"
+        }), 400
+    if manage_res.sex == 1:
+        se = "女"
+    else:
+        se = "男"
+    res = {
+        "id": manage_res.id,
+        "name": manage_res.name,
+        "unit": manage_res.unit,
+        "position": manage_res.position,
+        "sex":  se
+    }
+    return jsonify(res), 200
+
+
+# 这个主要是对本项目的申报人的依托单位的信息进行展示
+@api.route("/file/review/<int:id>/unit")
+def show_unit(id):
+    re = Project.query.filter(Project.id == id).first()
+    if re is None:
+        return jsonify({
+            "msg": "查询数据库失败"
+        }), 400
+    uid = re.unit_id
+    unit_res = Unit.query.filter(Unit.id == uid).first()
+    if unit_res is None:
+        return jsonify({
+            "msg": "查询依托单位的表失败"
+        }), 400
+    res = {
+        "id": unit_res.id,
+        "name": unit_res.name,
+        "location": unit_res.location
+    }
+    return jsonify(res), 200
+
+
+# 这个主要是对项目一些预期信息进行展示的接口
+@api.route("/file/review/<int:id>/performance")
+def show_performance(id):
+    re = Project.query.filter(Project.id == id).first()
+    if re is None:
+        return jsonify({
+            "msg": "查询项目信息失败"
+        }), 400
+    eid = re.expected_performance_id
+    res = Expected_Performance.query.filter(Expected_Performance.id == eid).first()
+    if res is None:
+        return jsonify({
+            "msg": "查询项目预期信息失败"
+        }), 400
+    result = {
+        "id": res.id,
+        "content": res.content,
+        "expense": res.expenses,
+        "deadline": res.deadline
+    }
+    return jsonify(result), 200

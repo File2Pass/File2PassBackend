@@ -23,8 +23,8 @@ class Manager(db.Model):
     __tablename__ = 'manager'
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(25))
-    uint = db.Column(db.String(25))
-    postion = db.Column(db.String(25))
+    unit = db.Column(db.String(25))
+    position = db.Column(db.String(25))
     sex = db.Column(db.SmallInteger)
 
 
@@ -45,5 +45,5 @@ class Expected_Performance(db.Model):
     __tablename__ = 'expected_performance'
     id = db.Column(db.BigInteger, primary_key=True)
     content = db.Column(db.Text)
-    expenses = db.Column(db.Double)
+    expenses = db.Column(db.BigInteger)
     deadline = db.Column(db.DateTime)

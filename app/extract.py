@@ -7,6 +7,7 @@ from win32com import client as wc
 from docx import Document
 import os
 import re
+import pdfplumber
 
 
 class DocxOperate():
@@ -17,16 +18,17 @@ class DocxOperate():
         :param path:
         :return:
         '''
-        doc_list = [os.path.join(path, item) for item in os.listdir(path) if item.endswith('doc')]
+        # doc_list = [os.path.join(path, item) for item in os.listdir(path) if item.endswith('doc') or item.endswith('docx')]
+
         word = wc.Dispatch('Word.Application')
-        print(doc_list)
+        # print(doc_list)
         for doc in doc_list:
-            new_doc = doc.replace('doc', 'docx')
+            new_doc = doc.replace('doc', 'docx') if doc.endswith('doc') else doc
             operate_doc = word.Documents.Open(doc)
             operate_doc.SaveAs(new_doc, 12, False, '', True, '', False, False, False, False)
             operate_doc.Close()
             print('{} Save sucessfully '.format(new_doc))
-            os.remove(doc)
+            os.remove(doc) if doc.endswith('doc') else None
         word.Quit()
 
     # doctodocx('D:\program\pycharm\文件')
@@ -50,7 +52,9 @@ class DocxOperate():
         :param path:
         :return:
         '''
+        # self.doctodocx(path)
         document = Document(path)
+        # print(path)
         all_tables = document.tables
         item_list = []
         text_list = {}
@@ -58,6 +62,7 @@ class DocxOperate():
             for row_index, row in enumerate(table.rows, 1):
                 row_list = []
                 for col_index, cell in enumerate(row.cells, 1):
+                    print(col_index, cell.text)
                     item_list.append(cell.text) if row_index == 1 else row_list.append(cell.text)
                 if row_list:
                     text_list[str(row_index - 1)] = row_list
@@ -100,4 +105,26 @@ class DocxOperate():
 
 
 # DocxOperate().getPicture(r'../文件/zh.docx', r'../文件')
-DocxOperate().getText(r"C:\Users\hp\Desktop\data\1.docx")
+# _, text_list = DocxOperate().getTable(r"C:\Users\hp\Desktop\2022大创\罗老师\计算机设计\118-字母词分级规范研究-王秋萍.docx")
+# print(text_list)
+
+
+
+class PDFOperate():
+    def getTable(self, path):
+        with pdfplumber.open(r'C:\Users\hp\Desktop\2022大创\罗老师\计算机设计\118-字母词分级规范研究-王秋萍.pdf') as pdf:
+            print(pdf.pages)
+            for i in range(16):
+                page = pdf.pages[i]
+                print("第" + str(i) + "页")
+                for rows in page.extract_tables():
+                    for row in rows:
+                        row = list(filter(None, row))
+                        print(row)
+                    # print(row[0])  # 打印每个列表对应的第一个元素
+
+
+# PDFOperate().getTable(r'C:\Users\hp\Desktop\2022大创\罗老师\计算机设计\118-字母词分级规范研究-王秋萍.pdf')
+
+
+DocxOperate().getTable(r'static\1.docx')

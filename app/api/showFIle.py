@@ -66,7 +66,6 @@ def show_manager(id):
         "unit": manage_res.unit,
         "position": manage_res.position,
         "sex":  manage_res.gender,
-        "email": manage_res.email,
         "nationality": manage_res.nationality,
         "birthday": manage_res.birthday,
         "expertise": manage_res.expertise,

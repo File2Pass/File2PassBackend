@@ -2,9 +2,13 @@ from . import api
 from flask import jsonify, current_app, url_for, flash, request, redirect
 import os
 from werkzeug.utils import secure_filename
+import pdfplumber
+from app.models import Project, Manager, Member_info, Unit, Member2pro
+from app import db
 
-ALLOWED_EXTENSIONS = {'doc', 'docx'}
-UPLOAD_FOLDER = '../static'
+ALLOWED_EXTENSIONS = {'doc', 'docx', 'pdf'}
+UPLOAD_FOLDER = 'C:/Users/hp/File2PassBackend/app/static'
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -29,7 +33,76 @@ def upload_file():
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
+            file.save(rePlace(os.path.join(UPLOAD_FOLDER, filename)))
+
+            parse_table(filename)
+
             return jsonify({
-               'msg': "上传文件成功"
+                'msg': "上传文件成功"
             }), 200
+
+
+def parse_table(filename):
+    with pdfplumber.open(os.path.join(UPLOAD_FOLDER, filename)) as pdf:
+        page = pdf.pages[1]
+        data = []
+        for rows in page.extract_tables():
+            for row in rows:
+                row = list(filter(None, row))
+                row = list(map(pure_format, row))
+                data.append(row)
+
+        manager = Manager()
+        manager.name = data[1][1]
+        manager.birthday = data[1][7]
+        manager.system = data[4][3]
+        manager.expertise = data[2][5]
+        manager.tutor = data[3][3]
+        manager.nationality = data[1][5]
+        manager.unit = data[8][1]
+        manager.position = data[2][1]
+        manager.gender = data[1][3]
+        db.session.add(manager)
+        db.session.commit()
+
+        unit = Unit()
+        unit.name = data[8][1]
+        unit.post = data[8][3]
+        unit.location = data[10][3]
+        unit.phone = data[10][1]
+        db.session.add(unit)
+        db.session.commit()
+
+        project = Project()
+        project.type = '一般项目'
+        project.summary = data[18][0]
+        project.name = data[0][1]
+        project.manager_id = manager.id
+        project.unit_id = unit.id
+        db.session.add(project)
+        db.session.commit()
+
+        for i in range(12, 17):
+            member = Member_info()
+            member.name = data[i][0]
+            member.gender = data[i][1]
+            member.birthday = data[i][2]
+
+            db.session.add(member)
+            db.session.commit()
+
+            member2pro = Member2pro()
+            member2pro.mid = member.id
+            member2pro.pid = project.id
+            db.session.add(member2pro)
+            db.session.commit()
+
+
+def pure_format(word):
+    return word.strip().replace('\n', '').replace('\r', '').replace(' ', '')
+
+
+
+def rePlace(url):
+    url = url.replace("/", "\\")
+    return url

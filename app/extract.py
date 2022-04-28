@@ -124,7 +124,28 @@ class PDFOperate():
                     # print(row[0])  # 打印每个列表对应的第一个元素
 
 
+def getDataFromTable(path):
+    document = Document(path)
+    # 获取文档中的所有表格
+    all_tables = document.tables
+    text = ''
+    for table in all_tables:
+        cell_list = []
+        for row in table.rows:
+            cell_list.clear()
+            for cell in row.cells:
+                tempt = text
+                text = cell.text.replace('\n', '').replace(' ', '')
+                if tempt == text:
+                    continue
+                cell_list.append(text)
+            print(cell_list)
+
+
+getDataFromTable(r'static\1.docx')
+
+
 # PDFOperate().getTable(r'C:\Users\hp\Desktop\2022大创\罗老师\计算机设计\118-字母词分级规范研究-王秋萍.pdf')
 
 
-DocxOperate().getTable(r'static\1.docx')
+# DocxOperate().getTable(r'static\1.docx')

@@ -20,7 +20,6 @@ CREATE TABLE `manager` (
   `name` VARCHAR(10) NOT NULL COMMENT "项目负责人姓名",
   `unit` VARCHAR(25) NOT NULL COMMENT "项目负责人目前所在单位",
   `position` VARCHAR(25) NOT NULL COMMENT "项目负责人目前职位",
-  `email` varchar(25) not null COMMENT "项目负责人的邮箱",
   `gender` varchar(10) NOT NULL COMMENT "性别 0-男性 1-女性",
   `nationality` varchar(10) not null COMMENT "项目负责人的民族",
   `birthday` varchar(30) not null COMMENT "项目负责人的生日",
@@ -30,8 +29,8 @@ CREATE TABLE `manager` (
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = UTF8MB4;
 
-INSERT INTO manager values(1, "张旷", "华中师范大学", "主任", "2312", "男", "汉", "2002-5-1", "计算机", "硕士生导师", "教育系统");
-INSERT INTO manager values(2, "张广", "华中科技大学", "主任", "2312", "男", "汉", "2002-5-1", "计算机", "硕士生导师", "教育系统");
+INSERT INTO manager values(1, "张旷", "华中师范大学", "主任",  "男", "汉", "2002-5-1", "计算机", "硕士生导师", "教育系统");
+INSERT INTO manager values(2, "张广", "华中科技大学", "主任",  "男", "汉", "2002-5-1", "计算机", "硕士生导师", "教育系统");
 
 CREATE TABLE `unit` (
   `id` INT AUTO_INCREMENT COMMENT "依托单位id",
@@ -48,7 +47,7 @@ INSERT INTO unit values(2, "华中科技大学", "10068", "2245", "洪山去");
 create table  `member_info` (
    `id` int AUTO_INCREMENT  COMMENT "成员id",
    `name` varchar(10) not null COMMENT "成员姓名",
-   `gender` varchar(5) not null COMMENT "成员性别",
+   `gender` varchar(10) not null COMMENT "成员性别",
    `birthday` varchar(20) not null COMMENT "成员生日",
    PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = UTF8MB4;

@@ -23,7 +23,6 @@ class Manager(db.Model):
     name = db.Column(db.String(25))
     unit = db.Column(db.String(25))
     position = db.Column(db.String(25))
-    email = db.Column(db.String(25))
     gender = db.Column(db.SmallInteger)
     nationality = db.Column(db.String(20))
     birthday = db.Column(db.String(20))

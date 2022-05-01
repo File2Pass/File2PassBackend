@@ -1,10 +1,11 @@
 from . import api
-from flask import jsonify, current_app, url_for, flash, request, redirect
+from flask import jsonify, flash, request
 import os
 from werkzeug.utils import secure_filename
 import pdfplumber
 from app.models import Project, Manager, Member_info, Unit, Member2pro
 from app import db
+from ..utils import pure_format
 
 ALLOWED_EXTENSIONS = {'doc', 'docx', 'pdf'}
 UPLOAD_FOLDER = 'C:/Users/hp/File2PassBackend/app/static'
@@ -74,7 +75,12 @@ def parse_table(filename):
         db.session.commit()
 
         project = Project()
-        project.type = '一般项目'
+
+        page01 = pdf.pages[0]  # 指定页码
+        text = page01.extract_text()  # 提取文本
+        lines = list(map(pure_format, list(text.split("\n"))))
+
+        project.type = lines[2][-4:]
         project.summary = data[18][0]
         project.name = data[0][1]
         project.manager_id = manager.id
@@ -83,6 +89,8 @@ def parse_table(filename):
         db.session.commit()
 
         for i in range(12, 17):
+            if len(data[i]) < 2:
+                break
             member = Member_info()
             member.name = data[i][0]
             member.gender = data[i][1]
@@ -96,12 +104,6 @@ def parse_table(filename):
             member2pro.pid = project.id
             db.session.add(member2pro)
             db.session.commit()
-
-
-def pure_format(word):
-    return word.strip().replace('\n', '').replace('\r', '').replace(' ', '')
-
-
 
 def rePlace(url):
     url = url.replace("/", "\\")

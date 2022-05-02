@@ -12,6 +12,7 @@ class Project(db.Model):
     name = db.Column(db.String(25))
     manager_id = db.Column(db.BigInteger)
     unit_id = db.Column(db.BigInteger)
+    text_id = db.Column(db.BigInteger)
 
 
 class Manager(db.Model):
@@ -56,6 +57,14 @@ class Member2pro(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     mid = db.Column(db.BigInteger)
     pid = db.Column(db.BigInteger)
+
+
+class TextInfo(db.Model):
+    __tablename__ = 'TextInfo'
+    id = db.Column(db.BigInteger, primary_key=True)
+    argument = db.Column(db.Text)
+    guarantee = db.Column(db.Text)
+
 
 # class Expected_Performance(db.Model):
 #     """

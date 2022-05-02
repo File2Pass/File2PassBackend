@@ -1,7 +1,7 @@
 # 这个文件主要完成的是对数据库中存储的申报书的内容进行提取
 from . import api
 from .. import db
-from ..models import Project, Manager, Unit, Member_info, Member2pro
+from ..models import Project, Manager, Unit, Member_info, Member2pro, TextInfo
 from flask import jsonify
 
 
@@ -50,7 +50,7 @@ def show_project(id):
 def show_manager(id):
     re = Project.query.filter(Project.id == id)
     uid = re[0].manager_id
-    print("id:", uid)
+    # print("id:", uid)
     manage_res = Manager.query.filter(Manager.id == int(uid)).first()
     if manage_res is None:
         return jsonify({
@@ -142,3 +142,21 @@ def show_member(id):
         } for i in info]
     }
     return jsonify(result), 200
+
+
+# 对正文信息进行获取
+@api.route("/file/review/<int:id>/text")
+def show_text(id):
+    id_list = Project.query.filter(Project.id == id).first()
+    if id_list is None:
+        return jsonify({
+            "msg": "查询正文的表失败"
+        }), 400
+    tid = id_list.text_id
+    text_res = TextInfo.query.filter(TextInfo.id == tid).first()
+    res = {
+        "id": text_res.id,
+        "argument": text_res.argument,
+        "guarantee": text_res.guarantee
+    }
+    return jsonify(res), 200

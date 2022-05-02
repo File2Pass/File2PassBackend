@@ -9,11 +9,12 @@ CREATE TABLE `project` (
   `name` VARCHAR(25) NOT NULL COMMENT "项目名称",
   `manager_id` INT NOT NULL COMMENT "项目负责人id",
   `unit_id` INT NOT NULL COMMENT "依托单位id",
+  `text_id` int not null COMMENT "项目正文id",
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = UTF8MB4;
 
-INSERT INTO project values(1, "一般项目", "本项目主要是为了帮助代价合理的学习计算机", "学习法则", 1, 1);
-INSERT INTO project values(2, "大型项目", "本项目主要是为了计算机的进阶学习的方式", "进阶学习", 2, 2);
+INSERT INTO project values(1, "一般项目", "本项目主要是为了帮助代价合理的学习计算机", "学习法则", 1, 1, 1);
+INSERT INTO project values(2, "大型项目", "本项目主要是为了计算机的进阶学习的方式", "进阶学习", 2, 2, 2);
 
 CREATE TABLE `manager` (
   `id` INT AUTO_INCREMENT COMMENT "项目负责人id",
@@ -67,3 +68,13 @@ INSERT INTO member2pro values(1,1,1);
 INSERT INTO member2pro values(2,1,2);
 INSERT INTO member2pro values(3,2,1);
 INSERT INTO member2pro values(4,3,1);
+
+create table `TextInfo` (
+    `id` int AUTO_INCREMENT,
+    `argument` text COMMENT "项目论证信息",
+    `guarantee` text COMMENT "项目基础与保障",
+    PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = UTF8MB4;
+
+INSERT into TextInfo values(1, "好项目", "我们是一定能够完成的");
+INSERT into TextInfo values(2, "大项目", "我们一定会全力以赴的去实现的");

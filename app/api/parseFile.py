@@ -90,7 +90,7 @@ def parse_table(filename):
         for i in range(4, len(pdf.pages)):
             page = pdf.pages[i]
             page_content = '\n'.join(page.extract_text().split('\n')[:-1])
-            content = cont + page_content
+            cont = cont + page_content
             textInfo.guarantee = cont
         db.session.add(textInfo)
         db.session.commit()

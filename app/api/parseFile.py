@@ -39,13 +39,14 @@ def upload_file():
 
             ok = filename.endswith(".pdf")
             if ok is True:
-                parse_table(filename)
+                Id = parse_table(filename)
             else:
-                getDataFromTable(filename)
+                Id = getDataFromTable(filename)
 
-            return jsonify({
-                'msg': "上传文件成功"
-            }), 200
+            # return jsonify({
+            #     'msg': "上传文件成功"
+            # }), 200
+    return jsonify(Id), 200
 
 
 def parse_table(filename):
@@ -126,7 +127,7 @@ def parse_table(filename):
             member2pro.pid = project.id
             db.session.add(member2pro)
             db.session.commit()
-
+    return project.id
 
 
 def getDataFromTable(path):
@@ -204,7 +205,7 @@ def getDataFromTable(path):
         member2pro.pid = project.id
         db.session.add(member2pro)
         db.session.commit()
-
+    return project.id
             # getDataFromTable(r"../static/1.docx")
 
 

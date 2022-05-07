@@ -10,6 +10,7 @@ from docx import Document
 
 ALLOWED_EXTENSIONS = {'doc', 'docx', 'pdf'}
 UPLOAD_FOLDER = 'C:/Users/hp/File2PassBackend/app/static'
+# UPLOAD_FOLDER = '../static'
 
 
 def allowed_file(filename):

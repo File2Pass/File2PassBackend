@@ -3,6 +3,7 @@ from . import api
 from .. import db
 from ..models import Project, Manager, Unit, Member_info, Member2pro, TextInfo
 from flask import jsonify
+from ..utils import check_text
 
 
 # 这个主要是通过通过前端发送过来的申报书id对数据库内的信息进行展示
@@ -51,8 +52,8 @@ def show_manager(id):
     re = Project.query.filter(Project.id == id)
     uid = re[0].manager_id
     # print("id:", uid)
-    manage_res = Manager.query.filter(Manager.id == int(uid)).first()
-    if manage_res is None:
+    manage_reses = Manager.query.filter(Manager.id == int(uid))
+    if manage_reses is None:
         return jsonify({
             "msg": "获取失败"
         }), 400
@@ -61,16 +62,20 @@ def show_manager(id):
     # else:
     #     se = "男"
     res = {
-        "id": manage_res.id,
-        "name": manage_res.name,
-        "unit": manage_res.unit,
-        "position": manage_res.position,
-        "sex":  manage_res.gender,
-        "nationality": manage_res.nationality,
-        "birthday": manage_res.birthday,
-        "expertise": manage_res.expertise,
-        "tutor": manage_res.tutor,
-        "system": manage_res.system
+        "list": [{
+            "id": manage_res.id,
+            "name": manage_res.name,
+            "unit": manage_res.unit,
+            "position": manage_res.position,
+            "sex": manage_res.gender,
+            "nationality": manage_res.nationality,
+            "birthday": manage_res.birthday,
+            "expertise": manage_res.expertise,
+            "tutor": manage_res.tutor,
+            "system": manage_res.system
+        } for manage_res in manage_reses ]
+
+
     }
     return jsonify(res), 200
 
@@ -84,18 +89,19 @@ def show_unit(id):
             "msg": "查询数据库失败"
         }), 400
     uid = re.unit_id
-    unit_res = Unit.query.filter(Unit.id == uid).first()
-    if unit_res is None:
+    unit_reses = Unit.query.filter(Unit.id == uid)
+    if unit_reses is None:
         return jsonify({
             "msg": "查询依托单位的表失败"
         }), 400
     res = {
-        "id": unit_res.id,
-        "name": unit_res.name,
-        "phone": unit_res.phone,
-        "post": unit_res.post,
-        "location": unit_res.location
-    }
+        "list":[{
+            "id": unit_res.id,
+            "name": unit_res.name,
+            "phone": unit_res.phone,
+            "post": unit_res.post,
+            "location": unit_res.location
+    }for unit_res in unit_reses]}
     return jsonify(res), 200
 
 
@@ -153,10 +159,55 @@ def show_text(id):
             "msg": "查询正文的表失败"
         }), 400
     tid = id_list.text_id
-    text_res = TextInfo.query.filter(TextInfo.id == tid).first()
+    text_reses = TextInfo.query.filter(TextInfo.id == tid)
     res = {
-        "id": text_res.id,
-        "argument": text_res.argument,
-        "guarantee": text_res.guarantee
-    }
+        "list": [{
+            "id": text_res.id,
+            "argument": text_res.argument,
+            "guarantee": text_res.guarantee
+    } for text_res in text_reses]}
     return jsonify(res), 200
+
+
+# 这是对正文内容进行查重的接口
+@api.route("/file/review/<int:id>/check")
+def show_check(id):
+    info_list = Project.query.filter(Project.id == id).first()
+    if info_list is None:
+        return jsonify({
+            "msg": "查询文本信息失败"
+        }), 400
+    tid = info_list.text_id
+    text_info = TextInfo.query.filter(TextInfo.id == tid).first()
+    if text_info is None:
+        return jsonify({
+            "msg": "查询文本详情失败"
+        }), 400
+    texts = []
+    # 这里主要是为了能够对应文本的id
+    text_ids = []
+    text = text_info.argument
+    texts.append(text)
+    # text_ids.append(tid)
+    all_text = TextInfo.query.all()
+    for t in all_text:
+        if t.id == tid:
+            continue
+        text_ids.append(t.id)
+        texts.append(t.argument)
+
+    # print(texts)
+    res = check_text(texts)
+    project_names = []
+    for t_id in text_ids:
+        project_info = Project.query.filter(Project.text_id == t_id).first()
+        project_names.append(project_info.name)
+
+    result = {
+        "data": [{
+            "project_name": project_names[i],
+            "same_res": float(res[i])
+        } for i in range(len(project_names))]
+    }
+
+    return jsonify(result), 200
